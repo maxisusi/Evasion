@@ -50,6 +50,24 @@ type Expression interface {
 }
 
 /* ### EXPRESSION - Integer ### */
+type PrefixExpression struct {
+	Token    token.Token // The prefix token, e.g. !
+	Operator string
+	Right    Expression
+}
+
+func (pe *PrefixExpression) expressionNode()      {}
+func (pe *PrefixExpression) TokenLiteral() string { return pe.Token.Literal }
+func (pe *PrefixExpression) String() string {
+	var out bytes.Buffer
+	out.WriteString("(")
+	out.WriteString(pe.Operator)
+	out.WriteString(pe.Right.String())
+	out.WriteString(")")
+	return out.String()
+}
+
+/* ### EXPRESSION - Integer ### */
 type IntegerLiteral struct {
 	Token token.Token
 	Value int64
@@ -73,6 +91,8 @@ func (es *ExpressionStatement) String() string {
 }
 func (es *ExpressionStatement) statementNode()       {}
 func (es *ExpressionStatement) TokenLiteral() string { return es.Token.Literal }
+
+/* ### EXPRESSION - Prefix ### */
 
 /* ### RETURN STATEMENT ### */
 
