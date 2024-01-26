@@ -6,7 +6,6 @@ import (
 )
 
 /* ### PROGRAM ### */
-
 type Program struct {
 	Statements []Statement
 }
@@ -29,27 +28,44 @@ func (p *Program) String() string {
 }
 
 /* ### NODE ### */
-
 type Node interface {
 	TokenLiteral() string
 	String() string
 }
 
 /* ### STATEMENT ### */
-
 type Statement interface {
 	Node
 	statementNode()
 }
 
 /* ### EXPRESSION ### */
-
 type Expression interface {
 	Node
 	expressionNode()
 }
 
-/* ### EXPRESSION - Integer ### */
+/* ### EXPRESSION - Infix ### */
+type InfixExpression struct {
+	Token    token.Token // The operator token, e.g. +
+	Left     Expression
+	Operator string
+	Right    Expression
+}
+
+func (ie *InfixExpression) expressionNode()      {}
+func (ie *InfixExpression) TokenLiteral() string { return ie.Token.Literal }
+func (ie *InfixExpression) String() string {
+	var out bytes.Buffer
+	out.WriteString("(")
+	out.WriteString(ie.Left.String())
+	out.WriteString(" " + ie.Operator + " ")
+	out.WriteString(ie.Right.String())
+	out.WriteString(")")
+	return out.String()
+}
+
+/* ### EXPRESSION - Prefix ### */
 type PrefixExpression struct {
 	Token    token.Token // The prefix token, e.g. !
 	Operator string
@@ -92,10 +108,7 @@ func (es *ExpressionStatement) String() string {
 func (es *ExpressionStatement) statementNode()       {}
 func (es *ExpressionStatement) TokenLiteral() string { return es.Token.Literal }
 
-/* ### EXPRESSION - Prefix ### */
-
 /* ### RETURN STATEMENT ### */
-
 type ReturnStatement struct {
 	Token       token.Token
 	ReturnValue Expression
@@ -124,7 +137,6 @@ type LetStatement struct {
 }
 
 /* ### LET STATEMENT ### */
-
 func (ls *LetStatement) String() string {
 	var out bytes.Buffer
 
@@ -143,7 +155,6 @@ func (ls *LetStatement) statementNode()       {}
 func (ls *LetStatement) TokenLiteral() string { return ls.Token.Literal }
 
 /* ### IDENTIFIER ### */
-
 type Identifier struct {
 	Token token.Token
 	Value string
